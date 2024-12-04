@@ -6,5 +6,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run Busted
+      - name: busted
         uses: lunarmodules/busted@v2
+      - name: luacheck
+        uses: lunarmodules/luacheck@v1
