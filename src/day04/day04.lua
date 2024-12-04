@@ -39,12 +39,15 @@ M.solve = function(input)
             matrix[row][col], matrix[row + 1][col - 1], matrix[row + 2][col - 2], matrix[row + 3][col - 3]
         return (x == "X" and m == "M" and a == "A" and s == "S") or (x == "S" and m == "A" and a == "M" and s == "X")
     end
+    -- prevent OOB
+    matrix[0] = {}
     matrix[row_count + 1] = {}
     matrix[row_count + 2] = {}
     matrix[row_count + 3] = {}
 
     for row = 1, row_count do
         for col = 1, col_count do
+            -- part1
             if check_east(row, col) then
                 part1 = part1 + 1
             end
@@ -56,6 +59,17 @@ M.solve = function(input)
             end
             if check_sw(row, col) then
                 part1 = part1 + 1
+            end
+            -- part2
+            if matrix[row][col] == "A" then
+                local nw, se = matrix[row - 1][col - 1], matrix[row + 1][col + 1]
+                local ne, sw = matrix[row - 1][col + 1], matrix[row + 1][col - 1]
+                if
+                    ((nw == "M" and se == "S") or (nw == "S" and se == "M"))
+                    and ((ne == "M" and sw == "S") or (ne == "S" and sw == "M"))
+                then
+                    part2 = part2 + 1
+                end
             end
         end
     end
