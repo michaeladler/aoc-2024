@@ -3,7 +3,7 @@ default: test format
 
 .PHONY: test
 test:
-	busted .
+	busted --verbose src
 
 .PHONY: format
 format:

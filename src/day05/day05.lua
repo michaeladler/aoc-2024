@@ -25,38 +25,52 @@ M.solve = function(input)
     local part1, part2 = 0, 0
 
     local rules = {}
+    local rules_done = false
+
+    local lt = function(x, y)
+        return binary_search(rules[x] or {}, y) ~= -1
+    end
 
     for line in input:gmatch("[^\r\n]+") do
-        local idx = string.find(line, "|")
-        if idx then
-            local lhs = assert(tonumber(string.sub(line, 0, idx - 1)), "parse error")
-            local rhs = assert(tonumber(string.sub(line, idx + 1)), "parse error")
-            rules[lhs] = rules[lhs] or {}
-            table.insert(rules[lhs], rhs)
-        else
-            local t = {}
-            for s in line:gmatch("(%d+)") do
-                table.insert(t, tonumber(s))
+        if not rules_done then
+            local idx = string.find(line, "|")
+            if idx then
+                local lhs = assert(tonumber(string.sub(line, 0, idx - 1)), "parse error")
+                local rhs = assert(tonumber(string.sub(line, idx + 1)), "parse error")
+                rules[lhs] = rules[lhs] or {}
+                table.insert(rules[lhs], rhs)
+            else
+                rules_done = true
+                for _, numbers in pairs(rules) do
+                    table.sort(numbers)
+                end
             end
-            local n = #t
-            local ok = true
-            for i, x in ipairs(t) do
-                local rules_x = rules[x] or {}
-                table.sort(rules_x)
+        end
+        if rules_done then
+            local update = {}
+            for s in line:gmatch("(%d+)") do
+                table.insert(update, tonumber(s))
+            end
 
+            local n = #update
+            local ok = true
+            for i, x in ipairs(update) do
                 -- check if x is smaller than all numbers after it
                 for j = i + 1, n do
-                    local y = t[j]
-                    if binary_search(rules_x, y) == -1 then
+                    local y = update[j]
+                    if not lt(x, y) then
                         ok = false
                         goto end_check
                     end
                 end
             end
             ::end_check::
+            local mid = math.floor((1 + #update) / 2)
             if ok then
-                local mid = math.floor((1 + #t) / 2)
-                part1 = part1 + t[mid]
+                part1 = part1 + update[mid]
+            else -- fix the update
+                table.sort(update, lt)
+                part2 = part2 + update[mid]
             end
         end
     end
