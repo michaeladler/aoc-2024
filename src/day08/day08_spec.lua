@@ -17,6 +17,6 @@ describe("day08", function()
 ]]
         local part1, part2 = day08.solve(input)
         assert.are.equal(14, part1)
-        assert.are.equal(0, part2)
+        assert.are.equal(34, part2)
     end)
 end)
