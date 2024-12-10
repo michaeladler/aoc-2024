@@ -3,7 +3,7 @@ local M = {}
 
 local Point2D = require("aoc_helper.point").Point2D
 
---- Calculate m, n such that:
+--- Find integers m, n such that:
 ---
 --- (1) a*m + b*n = e
 --- (2) c*m + d*n = f
@@ -13,22 +13,25 @@ local function solve_2x2(a, b, c, d, e, f)
     if det == 0 then
         return nil, nil -- no solution exists
     end
-    local m = (e * d - b * f) / det
-    local n = (a * f - e * c) / det
-    return m, n
+    local nom1 = e * d - b * f
+    local nom2 = a * f - e * c
+    if nom1 % det == 0 and nom2 % det == 0 then
+        return nom1 / det, nom2 / det
+    end
+    return nil, nil
 end
 
 --- @param game Point2D[]
 local function play_game(game)
     local a_button, b_button, prize = game[1], game[2], game[3]
-    -- solve equations for m, n:
+    -- solve for m, n:
     -- a_button.x * m + b_button.x * n = prize.x
     -- a_button.y * m + b_button.y * n = prize.y
     local m, n = solve_2x2(a_button.x, b_button.x, a_button.y, b_button.y, prize.x, prize.y)
-    if m and n and m % 1 == 0 and n % 1 == 0 then
+    if m and n then
         return 3 * m + n
     end
-    return nil
+    return 0
 end
 
 --- @param input string
@@ -63,10 +66,10 @@ M.solve = function(input)
     end
 
     for _, game in pairs(games) do
-        local cost = play_game(game)
-        if cost then
-            part1 = part1 + cost
-        end
+        part1 = part1 + play_game(game)
+        --part2
+        game[3].x, game[3].y = 10000000000000 + game[3].x, 10000000000000 + game[3].y
+        part2 = part2 + play_game(game)
     end
 
     return part1, part2

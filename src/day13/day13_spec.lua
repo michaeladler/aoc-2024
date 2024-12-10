@@ -23,7 +23,7 @@ Prize: X=18641, Y=10279
             assert.are.equal(480, part1)
         end)
         it("part2", function()
-            assert.are.equal(0, part2)
+            assert.are.equal(875318608908, part2)
         end)
     end)
 end)
