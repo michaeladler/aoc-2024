@@ -10,8 +10,6 @@ local function get_digits(num)
     return result
 end
 
---- @param stones table<number, number>
---- @return table<number, number>
 local function blink(stones)
     local new_stones = {}
     for value, count in pairs(stones) do
@@ -61,20 +59,23 @@ end
 
 --- @param input string
 M.solve = function(input)
-    local part1, part2 = 0, 0
-
-    --- @type table<number, number>
     local stones = {}
     for s in input:gmatch("%d+") do
         stones[assert(tonumber(s), "value must not be nil")] = 1
     end
 
-    for _ = 1, 25 do
+    local part1, part2 = 0, 0
+    for i = 1, 75 do
         stones = blink(stones)
+        if i == 25 then
+            for _, count in pairs(stones) do
+                part1 = part1 + count
+            end
+        end
     end
 
     for _, count in pairs(stones) do
-        part1 = part1 + count
+        part2 = part2 + count
     end
 
     return part1, part2
