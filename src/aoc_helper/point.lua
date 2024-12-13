@@ -27,6 +27,13 @@ function Point2D.__sub(a, b)
     return Point2D:new(a.x - b.x, a.y - b.y)
 end
 
+--- @return Point2D
+--- @param a number
+--- @param b Point2D
+function Point2D.__mul(a, b)
+    return Point2D:new(a * b.x, a * b.y)
+end
+
 --- @return boolean
 function Point2D.__eq(a, b)
     return a.x == b.x and a.y == b.y
