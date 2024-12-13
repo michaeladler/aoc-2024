@@ -6,7 +6,7 @@ local Point2D = require("aoc_helper.point").Point2D
 local north, south, east, west = Point2D:new(0, -1), Point2D:new(0, 1), Point2D:new(1, 0), Point2D:new(-1, 0)
 local all_directions = { north, east, south, west } -- order matters, i and i+1 are orthogonal
 
-local function solve_part1(map)
+local function solve(map)
     --- @type table<Point2D, boolean>
     local seen = {}
 
@@ -15,69 +15,7 @@ local function solve_part1(map)
         -- do not start from a region we've visited before
         local start_hash = start:hash()
         if seen[start_hash] then
-            return 0
-        end
-        seen[start_hash] = true
-
-        local plant_start = map[start.y][start.x]
-
-        --- @type Point2D[]
-        local queue = { start }
-        local area, perimeter = 1, 4
-        repeat
-            local current = table.remove(queue, 1) -- pop
-            for _, dir in ipairs(all_directions) do
-                ---@type Point2D
-                local candidate = current + dir
-
-                local row = map[candidate.y]
-                if not row then
-                    goto continue
-                end
-                local neighbor_plant = row[candidate.x]
-                if neighbor_plant ~= plant_start then
-                    goto continue
-                end
-
-                perimeter = perimeter - 1
-                local candidate_hash = candidate:hash()
-                if not seen[candidate_hash] then
-                    seen[candidate_hash] = true
-                    table.insert(queue, candidate)
-                    area = area + 1
-                    perimeter = perimeter + 4
-                end
-
-                ::continue::
-            end
-        until queue[1] == nil
-
-        return area * perimeter
-    end
-
-    local row_count, col_count = #map, #map[1]
-    local total = 0
-    for y = 1, row_count do
-        for x = 1, col_count do
-            total = total + calc_price(Point2D:new(x, y))
-        end
-    end
-
-    return total
-end
-
-local function solve_part2(map)
-    -- key insight: number of sides = number of corners
-
-    --- @type table<Point2D, boolean>
-    local seen = {}
-
-    ---@param start Point2D
-    local calc_price = function(start) -- flood fill algorithm
-        -- do not start from a region we've visited before
-        local start_hash = start:hash()
-        if seen[start_hash] then
-            return 0
+            return 0, 0
         end
         seen[start_hash] = true
 
@@ -105,7 +43,8 @@ local function solve_part2(map)
 
         --- @type Point2D[]
         local queue = { start }
-        local area, corners = 1, count_corners(start)
+        local area, perimeter = 1, 4
+        local corners = count_corners(start)
         repeat
             local current = table.remove(queue, 1) -- pop
             for _, dir in ipairs(all_directions) do
@@ -121,11 +60,13 @@ local function solve_part2(map)
                     goto continue
                 end
 
+                perimeter = perimeter - 1
                 local candidate_hash = candidate:hash()
                 if not seen[candidate_hash] then
                     seen[candidate_hash] = true
                     table.insert(queue, candidate)
                     area = area + 1
+                    perimeter = perimeter + 4
                     corners = corners + count_corners(candidate)
                 end
 
@@ -133,18 +74,20 @@ local function solve_part2(map)
             end
         until queue[1] == nil
 
-        return area * corners
+        return area * perimeter, area * corners
     end
 
     local row_count, col_count = #map, #map[1]
-    local total = 0
+    local part1, part2 = 0, 0
     for y = 1, row_count do
         for x = 1, col_count do
-            total = total + calc_price(Point2D:new(x, y))
+            local a, b = calc_price(Point2D:new(x, y))
+            part1 = part1 + a
+            part2 = part2 + b
         end
     end
 
-    return total
+    return part1, part2
 end
 
 --- @param input string
@@ -157,7 +100,7 @@ M.solve = function(input)
         end
         table.insert(map, row)
     end
-    return solve_part1(map), solve_part2(map)
+    return solve(map)
 end
 
 return M
