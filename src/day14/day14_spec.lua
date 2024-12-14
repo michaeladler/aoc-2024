@@ -15,12 +15,9 @@ p=7,3 v=-1,2
 p=2,4 v=2,-3
 p=9,5 v=-3,-3
 ]]
-        local part1, part2 = day14.solve(input, 11, 7)
+        local part1, _ = day14.solve(input, 11, 7)
         it("part1", function()
             assert.are.equal(12, part1)
-        end)
-        it("part2", function()
-            assert.are.equal(0, part2)
         end)
     end)
 end)

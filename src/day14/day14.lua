@@ -56,39 +56,40 @@ M.solve = function(input, width, height)
     local part1 = top_left * top_right * lower_left * lower_right
 
     -- part2
-    local render = function()
+    local is_tree = function()
         local map = {}
-        for _, rbt in pairs(robots) do
-            local row = map[rbt.y] or {}
-            row[rbt.x] = (row[rbt.x] or 0) + 1
-            map[rbt.y] = row
+        for y = 0, height - 1 do
+            map[y] = {}
         end
 
-        local lines = {}
+        for _, rbt in pairs(robots) do
+            map[rbt.y][rbt.x] = "#"
+        end
+
         for y = 0, height - 1 do
-            local s = ""
+            -- look for "##########"
+            local count = 0
             for x = 0, width - 1 do
-                local count = (map[y] or {})[x]
-                if count then
-                    s = s .. "#"
-                else
-                    s = s .. "."
+                if map[y][x] == "#" then
+                    count = count + 1
+                else -- reset count
+                    count = 0
+                end
+                if count == 10 then
+                    return true
                 end
             end
-            table.insert(lines, s)
         end
-        return lines
+
+        return false
     end
 
-    local tree_pattern = string.rep("#", 10)
     local part2
-    for i = 101, 1000000000 do
+    for i = 101, 10000 do
         advance()
-        for _, line in ipairs(render()) do
-            if line:find(tree_pattern) then
-                part2 = i
-                goto done
-            end
+        if is_tree() then
+            part2 = i
+            goto done
         end
     end
     ::done::
