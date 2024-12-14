@@ -3,27 +3,6 @@ local M = {}
 
 local Point2D = require("aoc_helper.point").Point2D
 
--- local function draw(robots, width, height)
---     local map = {}
---     for _, rbt in pairs(robots) do
---         local row = map[rbt.y] or {}
---         row[rbt.x] = (row[rbt.x] or 0) + 1
---         map[rbt.y] = row
---     end
---
---     for y = 0, height - 1 do
---         for x = 0, width - 1 do
---             local count = (map[y] or {})[x]
---             if count then
---                 io.stdout:write(tostring(count))
---             else
---                 io.stdout:write(".")
---             end
---         end
---         io.stdout:write("\n")
---     end
--- end
-
 --- @param input string
 M.solve = function(input, width, height)
     width, height = width or 101, height or 103
@@ -76,8 +55,43 @@ M.solve = function(input, width, height)
 
     local part1 = top_left * top_right * lower_left * lower_right
 
-    local part2 = 0
+    -- part2
+    local render = function()
+        local map = {}
+        for _, rbt in pairs(robots) do
+            local row = map[rbt.y] or {}
+            row[rbt.x] = (row[rbt.x] or 0) + 1
+            map[rbt.y] = row
+        end
 
+        local lines = {}
+        for y = 0, height - 1 do
+            local s = ""
+            for x = 0, width - 1 do
+                local count = (map[y] or {})[x]
+                if count then
+                    s = s .. "#"
+                else
+                    s = s .. "."
+                end
+            end
+            table.insert(lines, s)
+        end
+        return lines
+    end
+
+    local tree_pattern = string.rep("#", 10)
+    local part2
+    for i = 101, 1000000000 do
+        advance()
+        for _, line in ipairs(render()) do
+            if line:find(tree_pattern) then
+                part2 = i
+                goto done
+            end
+        end
+    end
+    ::done::
     return part1, part2
 end
 
