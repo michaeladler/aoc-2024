@@ -13,12 +13,9 @@ describe("day15", function()
 
 <^^>>>vv<v>>v<<
 ]]
-        local part1, part2 = day15.solve(input)
+        local part1, _ = day15.solve(input)
         it("part1", function()
             assert.are.equal(2028, part1)
-        end)
-        it("part2", function()
-            assert.are.equal(0, part2)
         end)
     end)
 
@@ -50,7 +47,7 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
             assert.are.equal(10092, part1)
         end)
         it("part2", function()
-            assert.are.equal(0, part2)
+            assert.are.equal(9021, part2)
         end)
     end)
 end)
