@@ -49,4 +49,9 @@ function Point2D:__tostring()
     return string.format("Point2D(%d, %d)", self.x, self.y)
 end
 
+--- @return Point2D
+function Point2D:clone()
+    return Point2D:new(self.x, self.y)
+end
+
 return M
