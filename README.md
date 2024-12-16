@@ -1,5 +1,5 @@
 [![ci](https://github.com/michaeladler/aoc-2024/actions/workflows/ci.yml/badge.svg)](https://github.com/michaeladler/aoc-2024/actions/workflows/ci.yml)
-![](https://img.shields.io/badge/stars%20⭐-30-yellow)
+![](https://img.shields.io/badge/stars%20⭐-32-yellow)
 
 # 🎄 Advent of Code 2024 Solutions 🎄
 
@@ -22,3 +22,4 @@
 | 13  | Lua      | 2.31ms                |
 | 14  | Lua      | 610ms                 |
 | 15  | Lua      | 15.6ms                |
+| 16  | Lua      | 10400ms               |
