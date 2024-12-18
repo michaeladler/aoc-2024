@@ -1,8 +1,6 @@
 name: ci
 on:
   push:
-    branches:
-      - master
   workflow_dispatch:
   pull_request:
 
@@ -12,9 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: busted
-        uses: lunarmodules/busted@v2
+      - uses: cachix/install-nix-action@v30
         with:
-          args: --verbose src
-      - name: luacheck
-        uses: lunarmodules/luacheck@v1
+          nix_path: nixpkgs=channel:nixos-unstable
+      - run: nix-shell --run make -p luajitPackages.luacheck luajitPackages.busted stylua gnumake
+      - run: git diff --exit-code
