@@ -18,7 +18,7 @@ bbrgwb
             assert.are.equal(6, part1)
         end)
         it("part2", function()
-            assert.are.equal(0, part2)
+            assert.are.equal(16, part2)
         end)
     end)
 end)

@@ -25,26 +25,37 @@ end
 M.solve = function(input)
     local available, designs = parse(input)
 
+    local cache = {}
+
     --- @param design string
-    local function is_possible(design)
+    local function total_solutions(design)
         if design == "" then
-            return true
+            return 1
         end
+        local cached_result = cache[design]
+        if cached_result then
+            return cached_result
+        end
+
+        local result = 0
+
         for _, pattern in ipairs(available) do
             if has_prefix(design, pattern) then -- split off the prefix and recurse
                 local rest = string.sub(design, 1 + string.len(pattern))
-                if is_possible(rest) then
-                    return true
-                end
+                result = result + total_solutions(rest)
             end
         end
-        return false
+
+        cache[design] = result
+        return result
     end
 
     local part1, part2 = 0, 0
     for _, design in ipairs(designs) do
-        if is_possible(design) then
+        local count = total_solutions(design)
+        if count > 0 then
             part1 = part1 + 1
+            part2 = part2 + count
         end
     end
     return part1, part2
