@@ -5,35 +5,7 @@ local bit = require("bit")
 local bxor = bit.bxor
 local pow = math.pow
 
---- @param input string
-M.solve = function(input)
-    local prog = {}
-    local prog_count = 0
-    local reg_A, reg_B, reg_C
-
-    local parse = function()
-        local i = 1
-        for line in input:gmatch("[^\r\n]+") do
-            if i == 1 then
-                local num = line:match("Register A: (%d+)")
-                reg_A = tonumber(num)
-            elseif i == 2 then
-                local num = line:match("Register B: (%d+)")
-                reg_B = tonumber(num)
-            elseif i == 3 then
-                local num = line:match("Register C: (%d+)")
-                reg_C = tonumber(num)
-            else
-                for num in line:gmatch("(%d+)") do
-                    prog[prog_count] = tonumber(num)
-                    prog_count = prog_count + 1
-                end
-            end
-            i = i + 1
-        end
-    end
-    parse()
-
+local function run_prog(prog, prog_count, reg_A, reg_B, reg_C)
     local function combo_operand(operand)
         --  Combo operands 0 through 3 represent literal values 0 through 3.
         if operand >= 0 and operand <= 3 then
@@ -116,9 +88,41 @@ M.solve = function(input)
         ip = ip + 2
         ::continue::
     end
-    local part1 = table.concat(output, ",")
+    return output
+end
 
-    return part1, 0
+--- @param input string
+M.solve = function(input)
+    local parse = function()
+        local prog = {}
+        local prog_count = 0
+        local reg_A, reg_B, reg_C
+        local i = 1
+        for line in input:gmatch("[^\r\n]+") do
+            if i == 1 then
+                local num = line:match("Register A: (%d+)")
+                reg_A = tonumber(num)
+            elseif i == 2 then
+                local num = line:match("Register B: (%d+)")
+                reg_B = tonumber(num)
+            elseif i == 3 then
+                local num = line:match("Register C: (%d+)")
+                reg_C = tonumber(num)
+            else
+                for num in line:gmatch("(%d+)") do
+                    prog[prog_count] = tonumber(num)
+                    prog_count = prog_count + 1
+                end
+            end
+            i = i + 1
+        end
+        return prog, prog_count, reg_A, reg_B, reg_C
+    end
+    local prog, prog_count, original_reg_A, reg_B, reg_C = parse()
+    local part1 = table.concat(run_prog(prog, prog_count, original_reg_A, reg_B, reg_C), ",")
+
+    local part2 = 0
+    return part1, part2
 end
 
 return M
