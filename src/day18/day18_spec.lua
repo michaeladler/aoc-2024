@@ -1,7 +1,7 @@
 local day18 = require("day18")
 
 describe("day18", function()
-    describe("example 1", function()
+    describe("example", function()
         local input = [[5,4
 4,2
 4,5
@@ -29,9 +29,12 @@ describe("day18", function()
 2,0
 ]]
         local points = day18.parse(input)
-        local part1 = day18.shortest_path(points, 6, 12)
+        local part1, part2 = day18.shortest_path(points, 6, 12)
         it("part1", function()
             assert.are.equal(22, part1)
+        end)
+        it("part2", function()
+            assert.are.equal("6,1", part2)
         end)
     end)
 end)
