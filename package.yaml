@@ -1,0 +1,46 @@
+name: aoc2024
+version: 0.0.0
+license: Apache-2.0
+copyright: (c) 2025 Michael Adler
+author: Michael Adler
+maintainer: Michael Adler
+
+ghc-options: -Wall
+
+dependencies:
+   - base
+   - attoparsec
+   - protolude
+   - bytestring
+   - unordered-containers
+   - containers
+   - MemoTrie
+   - directory
+   - vector # Vector is a "better" Array
+   - array # Arrays are not for the faint of heart
+   - pretty-simple # just for debugging purposes
+   - text
+
+default-extensions:
+  - NoImplicitPrelude
+  - OverloadedStrings
+  - MultilineStrings
+  - TupleSections
+  - LambdaCase
+  - RecordWildCards 
+
+executable:
+  main: Main.hs
+  source-dirs: app
+  dependencies:
+    - aoc2024
+
+library:
+  source-dirs: src
+
+tests:
+  spec:
+    defaults: hspec/hspec@main
+    dependencies:
+      - aoc2024
+      - QuickCheck

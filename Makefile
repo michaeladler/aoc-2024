@@ -12,3 +12,6 @@ lint:
 .PHONY: format
 format:
 	stylua .
+
+nix/pkg.nix: aoc2024.cabal
+	cabal2nix ./. >$@

@@ -1,14 +1,23 @@
 generate DAY:
     #!/usr/bin/env bash
     set -euo pipefail
-    DAY={{ DAY }}
-    if [[ -d "src/day$DAY" ]]; then
-        echo "day$DAY already exists"
-        exit 1
-    fi
-    cp -a template "src/day$DAY"
-    find "src/day$DAY" -type f -exec sed -i "s/dayXX/day$DAY/g" {} +
-    cd "src/day$DAY"
-    mv dayXX.lua "day$DAY.lua"
-    mv dayXX_spec.lua "day${DAY}_spec.lua"
-    echo "Generated src/day$DAY"
+    cat ./template/DayXX.hs | sed -e s/DayXX/Day{{ DAY }}/g > ./src/Day{{ DAY }}.hs
+    cat ./template/DayXXSpec.hs | sed -e s/DayXX/Day{{ DAY }}/g | sed -e s/XX.txt/{{ DAY }}.txt/g  > ./test/Day{{ DAY }}Spec.hs
+    awk -f - app/Main.hs <<'EOF' > app/Main.hs.new
+    /import Protolude/ {
+        print "import qualified Day{{ DAY }}"
+    }
+    /Day not implemented yet/ {
+        print "runDay {{ DAY }} = runSolver Day{{ DAY }}.solve \"input/{{ DAY }}.txt\""
+    }
+    { print }
+    EOF
+    mv app/Main.hs.new app/Main.hs
+    hpack
+
+bench:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  BIN=$(cabal list-bin aoc2025)
+  hyperfine --warmup 3 --export-markdown bench.md \
+      "$BIN 17"
