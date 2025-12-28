@@ -1,6 +1,7 @@
 { mkDerivation, array, attoparsec, base, bytestring, containers
 , directory, hspec, hspec-discover, lib, MemoTrie, pretty-simple
-, protolude, QuickCheck, text, unordered-containers, vector
+, protolude, psqueues, QuickCheck, text, unordered-containers
+, vector
 }:
 mkDerivation {
   pname = "aoc2024";
@@ -10,15 +11,15 @@ mkDerivation {
   isExecutable = true;
   libraryHaskellDepends = [
     array attoparsec base bytestring containers directory MemoTrie
-    pretty-simple protolude text unordered-containers vector
+    pretty-simple protolude psqueues text unordered-containers vector
   ];
   executableHaskellDepends = [
     array attoparsec base bytestring containers directory MemoTrie
-    pretty-simple protolude text unordered-containers vector
+    pretty-simple protolude psqueues text unordered-containers vector
   ];
   testHaskellDepends = [
     array attoparsec base bytestring containers directory hspec
-    MemoTrie pretty-simple protolude QuickCheck text
+    MemoTrie pretty-simple protolude psqueues QuickCheck text
     unordered-containers vector
   ];
   testToolDepends = [ hspec-discover ];

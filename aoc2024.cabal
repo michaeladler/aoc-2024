@@ -15,7 +15,9 @@ build-type:     Simple
 
 library
   exposed-modules:
+      AocUtils
       Day17
+      Day20
   other-modules:
       Paths_aoc2024
   hs-source-dirs:
@@ -38,6 +40,7 @@ library
     , directory
     , pretty-simple
     , protolude
+    , psqueues
     , text
     , unordered-containers
     , vector
@@ -68,6 +71,7 @@ executable aoc2024
     , directory
     , pretty-simple
     , protolude
+    , psqueues
     , text
     , unordered-containers
     , vector
@@ -77,7 +81,9 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      AocUtilsSpec
       Day17Spec
+      Day20Spec
       Paths_aoc2024
   hs-source-dirs:
       test
@@ -102,6 +108,7 @@ test-suite spec
     , hspec ==2.*
     , pretty-simple
     , protolude
+    , psqueues
     , text
     , unordered-containers
     , vector

@@ -16,6 +16,7 @@ dependencies:
    - containers
    - MemoTrie
    - directory
+   - psqueues # Priority Search Queues, e.g. for Dijkstra or A*
    - vector # Vector is a "better" Array
    - array # Arrays are not for the faint of heart
    - pretty-simple # just for debugging purposes
