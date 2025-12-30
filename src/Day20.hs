@@ -11,12 +11,12 @@ import qualified Data.HashSet as HashSet
 import qualified Data.Sequence as Seq
 import Protolude hiding (state)
 
-type Matrix = HashMap Pos Char
+type Grid = HashMap Pos Char
 
 type Pos = (Int, Int) -- row, col
 
 solve :: C.ByteString -> Either Text (Int, Int)
-solve input = solve' . buildMatrix <$> parseOnly inputParser input
+solve input = solve' . buildGrid <$> parseOnly inputParser input
 
 inputParser :: Parser [[Char]]
 inputParser = lineParser `sepBy` endOfLine
@@ -33,29 +33,29 @@ inputParser = lineParser `sepBy` endOfLine
         'E' -> return c
         _ -> fail "Invalid input"
 
-buildMatrix :: [[Char]] -> (Matrix, Pos, Pos)
-buildMatrix xs = foldl' f (mempty, (0, 0), (0, 0)) (zip [0 ..] (map (zip [0 ..]) xs))
+buildGrid :: [[Char]] -> (Grid, Pos, Pos)
+buildGrid xs = foldl' f (mempty, (0, 0), (0, 0)) (zip [0 ..] (map (zip [0 ..]) xs))
   where
-    f :: (Matrix, Pos, Pos) -> (Int, [(Int, Char)]) -> (Matrix, Pos, Pos)
+    f :: (Grid, Pos, Pos) -> (Int, [(Int, Char)]) -> (Grid, Pos, Pos)
     f acc (rowIdx, ys) = foldl' g acc ys
       where
-        g :: (Matrix, Pos, Pos) -> (Int, Char) -> (Matrix, Pos, Pos)
-        g (matrix, start, end) (colIdx, c) =
+        g :: (Grid, Pos, Pos) -> (Int, Char) -> (Grid, Pos, Pos)
+        g (grid, start, end) (colIdx, c) =
           let start' = if c == 'S' then (rowIdx, colIdx) else start
               end' = if c == 'E' then (rowIdx, colIdx) else end
-           in (HashMap.insert (rowIdx, colIdx) c matrix, start', end')
+           in (HashMap.insert (rowIdx, colIdx) c grid, start', end')
 
-solve' :: (Matrix, Pos, Pos) -> (Int, Int)
-solve' (matrix, start, dest) =
-  let parents = bfs start (map fst . neighbors matrix False)
+solve' :: (Grid, Pos, Pos) -> (Int, Int)
+solve' (grid, start, dest) =
+  let parents = bfs start (map fst . neighbors grid False)
       shortestLegalDist = Seq.length (reconstructPath parents dest) - 1
-      allPaths = findAllPaths matrix start dest (shortestLegalDist - 100)
+      allPaths = findAllPaths grid start dest (shortestLegalDist - 100)
    in (length allPaths, 0)
 
-neighbors :: Matrix -> Bool -> Pos -> [(Pos, Char)]
-neighbors matrix cheating pos =
+neighbors :: Grid -> Bool -> Pos -> [(Pos, Char)]
+neighbors grid cheating pos =
   let candidates = neighbors4 pos
-      values = map (`HashMap.lookup` matrix) candidates
+      values = map (`HashMap.lookup` grid) candidates
 
       f cand (Just val) = if cheating || isEmpty val then Just (cand, val) else Nothing
       f _ Nothing = Nothing
@@ -71,30 +71,30 @@ data DfsState = DfsState
   }
   deriving (Eq, Show)
 
-findAllPaths :: Matrix -> Pos -> Pos -> Int -> [(Int, [Pos])]
-findAllPaths matrix start goal maxDist = dfs (DfsState {dfsStateCurrent = start, dfsStateDist = 0, dfsStateVisited = HashSet.singleton start, dfsStatePath = [start], dfsStateAllowCheat = True})
+findAllPaths :: Grid -> Pos -> Pos -> Int -> [(Int, [Pos])]
+findAllPaths grid start goal maxDist = dfs (DfsState {dfsStateCurrent = start, dfsStateDist = 0, dfsStateVisited = HashSet.singleton start, dfsStatePath = [start], dfsStateAllowCheat = True})
   where
     dfs :: DfsState -> [(Int, [Pos])]
     dfs DfsState {..}
       | dfsStateCurrent == goal && dfsStateDist <= maxDist = [(dfsStateDist, dfsStatePath)]
       | otherwise =
-          let nexts = filter (\(x, _) -> dfsStateDist < maxDist && not (x `HashSet.member` dfsStateVisited)) (neighbors matrix dfsStateAllowCheat dfsStateCurrent)
+          let nexts = filter (\(x, _) -> dfsStateDist < maxDist && not (x `HashSet.member` dfsStateVisited)) (neighbors grid dfsStateAllowCheat dfsStateCurrent)
            in concatMap (\(nb, val) -> dfs DfsState {dfsStateCurrent = nb, dfsStateDist = dfsStateDist + 1, dfsStateVisited = HashSet.insert nb dfsStateVisited, dfsStatePath = nb : dfsStatePath, dfsStateAllowCheat = dfsStateAllowCheat && val /= '#'}) nexts
 
-cheats :: Matrix -> Pos -> [(Pos, Pos)]
-cheats matrix pos =
+cheats :: Grid -> Pos -> [(Pos, Pos)]
+cheats grid pos =
   let candidates = concatMap (filter (\(_, q) -> q /= pos) . (\cand -> map (cand,) (neighbors4 cand))) (neighbors4 pos)
       uniqueCandidates = HashSet.toList (HashSet.fromList candidates)
    in -- we only care about pairs (p, q) :: (Pos, Pos) where p == '#' and q != '#'
-      mapMaybe (\(p, q) -> if (HashMap.lookup p matrix, isEmpty <$> HashMap.lookup q matrix) == (Just '#', Just True) then Just (p, q) else Nothing) uniqueCandidates
+      mapMaybe (\(p, q) -> if (HashMap.lookup p grid, isEmpty <$> HashMap.lookup q grid) == (Just '#', Just True) then Just (p, q) else Nothing) uniqueCandidates
 
 isEmpty :: Char -> Bool
 isEmpty '#' = False
 isEmpty _ = True
 
 -- Experimental Area
-example :: (Matrix, Pos, Pos)
-example = either (const (mempty, (0, 0), (0, 0))) buildMatrix (parseOnly inputParser exampleInput)
+example :: (Grid, Pos, Pos)
+example = either (const (mempty, (0, 0), (0, 0))) buildGrid (parseOnly inputParser exampleInput)
 
 exampleInput :: C.ByteString
 exampleInput =
