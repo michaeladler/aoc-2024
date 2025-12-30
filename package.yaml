@@ -21,6 +21,8 @@ dependencies:
    - array # Arrays are not for the faint of heart
    - pretty-simple # just for debugging purposes
    - text
+   - microlens
+   - microlens-th
 
 default-extensions:
   - NoImplicitPrelude
@@ -29,6 +31,7 @@ default-extensions:
   - TupleSections
   - LambdaCase
   - RecordWildCards 
+  - TemplateHaskell
 
 executable:
   main: Main.hs
